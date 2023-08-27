@@ -1,12 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using WebApplMVC_EntityFramework.Models;
-
+using Microsoft.EntityFrameworkCore.Query;
 namespace WebApplMVC_EntityFramework.Services
 {
     public interface IDatabaseHandlerRepository
     {
-        Task<List<BooksNew>> GetBooksNewsList();
+        Task<IQueryable<BooksNew>> GetBooksNewsList(string sortOrder, string SearchString);
         Task<BooksNew> GetDetailsBookNew(int? id);
         Task<List<SprFormat>> GetFormatsList();
         Task<List<SprIzd>> GetIzdList();

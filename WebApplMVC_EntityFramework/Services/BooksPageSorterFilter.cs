@@ -1,11 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WebApplMVC_EntityFramework.Models;
 
+
 namespace WebApplMVC_EntityFrameworkDZ.Services
 {
-    public class BooksPageSorterFilter
+    public class BooksPageSorterFilter : IBooksPageSorterFilter
     {
-        const string NameDesc = "name_desc";
+        const string NameDesc ="name_desc";
         const string NameAsc = "name_asc";
         const string IzdDesc = "izd_desc";
         const string IzdAsc = "izd_asc";
@@ -13,48 +14,26 @@ namespace WebApplMVC_EntityFrameworkDZ.Services
         const string CategoryAsc = "catg_asc";
 
 
-        public async Task FilteringResult(string SearchString, BooksContext context)
+        public async Task<IQueryable<BooksNew>> FilteringResult(string sortOrder, string SearchString, IQueryable<BooksNew> books)
         {
-            var booksNews = from books in context.BooksNews
-                            select books;
-
-
-            if (!string.IsNullOrEmpty(SearchString) && await booksNews.AnyAsync())
+            if (!string.IsNullOrEmpty(SearchString) && await books.AnyAsync())
             {
-                booksNews = booksNews.Where(s => s.Name.Contains(SearchString)
-                                       || s.Izd.Izd.ToString().Contains(SearchString)
-                                       || s.Kategory.Category.ToString().Contains(SearchString));
+                books =books.Where(s => s.Name.Contains(SearchString));
             }
+             books = SortingResult(sortOrder, books);
+
+            return books;
         }
 
 
-        public void SortingResult(ref string sortOrder, IQueryable<BooksNew> books)
+        private IQueryable<BooksNew> SortingResult(string sortOrder, IQueryable<BooksNew> books) => sortOrder switch
         {
-
-            if (string.IsNullOrEmpty(sortOrder))
-            {
-                sortOrder = NameAsc;
-            }
-            else if (sortOrder.Equals(NameDesc))
-            {
-                books.OrderByDescending(b => b.Name);
-            }
-            else if (sortOrder.Equals(IzdAsc))
-            {
-                books.OrderBy(b => b.Izd.Izd);
-            }
-            else if (sortOrder.Equals(IzdDesc))
-            {
-                books.OrderByDescending(b => b.Izd.Izd);
-            }
-            else if (sortOrder.Equals(CategoryDesc))
-            {
-                books.OrderByDescending(b => b.Kategory.Category);
-            }
-            else if (sortOrder.Equals(CategoryAsc))
-            {
-                books.OrderBy(b => b.Kategory.Category);
-            }
-        }
+            NameAsc => books.OrderBy(b => b.Name),
+            NameDesc => books.OrderByDescending(b => b.Name),
+            IzdAsc=> books.OrderBy(b => b.Izd.Izd),
+            IzdDesc=> books.OrderByDescending(b => b.Izd.Izd),
+            CategoryDesc=> books.OrderByDescending(b => b.Kategory.Category),
+            CategoryAsc=> books.OrderBy(b => b.Kategory.Category)
+        };
     }
 }

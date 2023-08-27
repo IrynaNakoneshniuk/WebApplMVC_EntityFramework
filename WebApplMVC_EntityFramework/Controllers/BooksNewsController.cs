@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using WebApplMVC_EntityFramework.Filters;
 using WebApplMVC_EntityFramework.Models;
 using WebApplMVC_EntityFramework.Services;
+using WebApplMVC_EntityFrameworkDZ.Data;
 
 namespace WebApplMVC_EntityFramework.Controllers
 {
@@ -18,11 +19,34 @@ namespace WebApplMVC_EntityFramework.Controllers
         }
 
         // GET: BooksNews
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder,string SearchString,int? pageNumber)
         {
-            var booksNew = await _databaseHandler.GetBooksNewsList();
+            return View(await PrepareData(sortOrder, SearchString, pageNumber)); ;
+        }
 
-            return View(booksNew);
+        public async Task<IActionResult> Indexdata(string sortOrder,string SearchString,int? pageNumber)
+        {
+
+            return PartialView(await PrepareData(sortOrder, SearchString, pageNumber)); ;
+        }
+
+        private async Task<PaginatedList<BooksNew>> PrepareData(string sortOrder, string SearchString, 
+            int? pageNumber)
+        {
+            if (sortOrder == null) {
+
+               sortOrder = "name_asc";
+            } 
+
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["NameSortParam"] = sortOrder == "name_asc" ? "name_desc" : "name_asc";
+            ViewData["IzdSortParam"] = sortOrder == "izd_asc" ? "izd_desc" : "izd_asc";
+            ViewData["CategorySortParam"] = sortOrder == "catg_asc" ? "catg_desc" : "catg_asc";
+            ViewData["CurrentFilter"] = SearchString;
+
+            var booksNew = await _databaseHandler.GetBooksNewsList(sortOrder, SearchString);
+
+            return await PaginatedList<BooksNew>.CreateAsync(booksNew, pageNumber ?? 1);
         }
 
         // GET: BooksNews/Details/5
@@ -91,7 +115,7 @@ namespace WebApplMVC_EntityFramework.Controllers
                 return NotFound();
             }
 
-            var booksNew = await _databaseHandler.GetBookById(id);  
+            var booksNew = await _databaseHandler.GetBookById(id);
             if (booksNew == null)
             {
                 return NotFound();
@@ -114,7 +138,7 @@ namespace WebApplMVC_EntityFramework.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int ?id,BooksNew booksNew)
+        public async Task<IActionResult> Edit(int? id, BooksNew booksNew)
         {
             if (id != booksNew.N)
             {
@@ -125,7 +149,7 @@ namespace WebApplMVC_EntityFramework.Controllers
             {
                 try
                 {
-                    await _databaseHandler.EditBook(id,booksNew);
+                    await _databaseHandler.EditBook(id, booksNew);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -175,13 +199,13 @@ namespace WebApplMVC_EntityFramework.Controllers
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
 
-        public async Task<IActionResult> DeleteConfirmed(int ?id)
+        public async Task<IActionResult> DeleteConfirmed(int? id)
         {
-           await _databaseHandler.DeleteConfirmed(id);
+            await _databaseHandler.DeleteConfirmed(id);
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<JsonResult> VerifyId(int ? id)
+        public async Task<JsonResult> VerifyId(int? id)
         {
             if (await _databaseHandler.BooksNewExists(id))
             {

@@ -1,0 +1,139 @@
+﻿@model PaginatedList<BooksNew>
+
+    <thead>
+        <tr>
+        <th>
+            Ідентифікатор
+        </th>
+        <th>
+            Код
+        </th>
+        <th>
+            Нова
+        </th>
+            <th>
+            <a asp-action="Indexdata"
+               asp-route-sortOrder=@ViewData["NameSortParam"]
+               asp-route-SearchString=@ViewData["CurrentFilter"]
+               data-ajax="true"
+               data-ajax-update="#BooksData"
+               data-ajax-method="GET">
+               Назва
+            </a>
+            </th>
+        <th>
+            Ціна
+        </th>
+        <th>
+           Дата
+        </th>
+        <th>
+           Тираж
+        </th>
+        <th>
+           Формат
+        </th>
+            <th>
+            <a asp-action="Indexdata"
+                   asp-route-sortOrder=@ViewData["IzdSortParam"]
+                   asp-route-SearchString=@ViewData["CurrentFilter"]
+                   data-ajax="true"
+                   data-ajax-update="#BooksData"
+                   data-ajax-method="GET">
+                   Видавництво
+                </a>
+            </th>
+            <th>
+            <a asp-action="Indexdata"
+                   asp-route-sortOrder=@ViewData["CategorySortParam"]
+                   asp-route-SearchString=@ViewData["CurrentFilter"]
+                   data-ajax="true"
+                   data-ajax-update="#BooksData"
+                   data-ajax-method="GET">
+                   Категорія
+                </a>
+            </th>
+        <th>
+            Тема
+        </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    <lable>@item.N</lable>
+                </td>
+                <td>
+                    <lable>@item.Code</lable>
+                </td>
+                <td>
+                <input type="checkbox" value=@item.New />
+                </td>
+                <td>
+                    <lable>@item.Name</lable>
+                </td>
+                <td>
+                    <lable>@item.Price</lable>
+                </td>
+                <td>
+                    <lable>@item.Date</lable>
+                </td>
+                <td>
+                    <lable>@item.Pressrun</lable>
+                </td>
+                <td>
+                    <lable>@item.Format?.Format</lable>
+                </td>
+                <td>
+                    <lable>@item.Izd?.Izd</lable>
+                </td>
+                <td>
+                    <lable>@item.Kategory?.Category</lable>
+                </td>
+                <td>
+                    <lable>@item.Themes?.Themes</lable>
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.N">Edit|</a>
+                    <a asp-action="Details" asp-route-id="@item.N">Details|</a>
+                    <a asp-action="Delete" asp-route-id="@item.N">Delete|</a>
+                </td>
+            </tr>
+        }
+        <tr>
+        @{
+            var prevDisabled = !Model.HaspreviousPage ? "disabled" : "";
+            var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+        }
+
+        <td>
+               
+                <a asp-action="Indexdata"
+                   asp-route-SortOrder=@ViewData["CurrentSort"]
+                   asp-route-pageNumber=@(Model.PageIndex-1)
+                   asp-route-SearchString=@ViewData["CurrentFilter"]
+                   data-ajax="true"
+                   data-ajax-update="#BooksData"
+                   data-ajax-method="GET"
+                   class="btn btn-primary @prevDisabled">
+                    Попередня
+                </a>
+        </td>
+        <td>
+                <a asp-action="Indexdata"
+                   asp-route-SortOrder=@ViewData["CurrentSort"]
+                   asp-route-pageNumber=@(Model.PageIndex+1)
+                   asp-route-SearchString=@ViewData["CurrentFilter"]
+                   data-ajax="true"
+                   data-ajax-update="#BooksData"
+                   data-ajax-method="GET"
+                   class="btn btn-primary @nextDisabled">
+                   Наступна
+                </a>
+        </td>
+        </tr>
+    </tbody>
+   

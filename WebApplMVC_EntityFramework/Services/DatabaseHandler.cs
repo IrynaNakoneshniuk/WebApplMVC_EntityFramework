@@ -1,26 +1,34 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using WebApplMVC_EntityFramework.Models;
+using WebApplMVC_EntityFrameworkDZ.Services;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace WebApplMVC_EntityFramework.Services
 {
     public class DatabaseHandler : IDatabaseHandlerRepository
     {
         private readonly BooksContext _context;
-        public DatabaseHandler(BooksContext context)
+        private readonly IBooksPageSorterFilter _sorterFilter;
+        public DatabaseHandler(BooksContext context, IBooksPageSorterFilter sorterFilter)
         {
             _context = context;
+            _sorterFilter = sorterFilter;
         }
 
-        public async Task<List<BooksNew>> GetBooksNewsList()
+        public async Task<IQueryable<BooksNew>> GetBooksNewsList(string sortOrder,string SearchString)
         {
             try
             {
-                var booksContext = _context.BooksNews.Include(b => b.Format).
-               Include(b => b.Izd).Include(b => b.Kategory).Include(b => b.Themes);
+               var booksContext= from books in _context.BooksNews
+                                 select books;
 
-                return await booksContext.AsNoTracking().
-                    ToListAsync();
+                booksContext = booksContext.Include(b => b.Format).
+                Include(b => b.Izd).Include(b => b.Kategory).Include(b => b.Themes);
+
+                booksContext = await _sorterFilter.FilteringResult(sortOrder, SearchString, booksContext);
+
+                return booksContext;
             }
             catch(SqlException ex)
             {
