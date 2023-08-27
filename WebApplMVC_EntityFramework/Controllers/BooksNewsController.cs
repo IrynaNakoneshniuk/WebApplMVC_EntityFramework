@@ -185,7 +185,8 @@ namespace WebApplMVC_EntityFramework.Controllers
         {
             if (await _databaseHandler.BooksNewExists(id))
             {
-                return Json($"Book with id {id} is already exist");
+                ///* return Json($"Book with id {id} is already exist"*/);
+                return Json(false);
             }
 
             return Json(true);

@@ -1,11 +1,12 @@
-﻿using System.ComponentModel;
+﻿using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel;
 
 namespace WebApplMVC_EntityFramework.Models;
 
 public partial class BooksNew
 {
     [DisplayName("Ідентифікатор")]
-    //[Remote(action: "VerifyId", controller: "BooksNews")]
+    [Remote(action: "VerifyId", controller: "BooksNews")]
     public int ?N { get; set; }
 
     [DisplayName("Код")]

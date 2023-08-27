@@ -19,7 +19,8 @@ namespace WebApplMVC_EntityFramework.Services
                 var booksContext = _context.BooksNews.Include(b => b.Format).
                Include(b => b.Izd).Include(b => b.Kategory).Include(b => b.Themes);
 
-                return await booksContext.ToListAsync();
+                return await booksContext.AsNoTracking().
+                    ToListAsync();
             }
             catch(SqlException ex)
             {
@@ -37,7 +38,7 @@ namespace WebApplMVC_EntityFramework.Services
                 .Include(b => b.Izd)
                 .Include(b => b.Kategory)
                 .Include(b => b.Themes)
-                .FirstOrDefaultAsync(m => m.N == id);
+                .AsNoTracking().FirstOrDefaultAsync(m => m.N == id);
 
                 return booksNew;
             }
@@ -52,7 +53,8 @@ namespace WebApplMVC_EntityFramework.Services
         {
             try
             {
-                return await _context.SprFormats.ToListAsync();
+                return await _context.SprFormats.AsNoTracking().
+                    ToListAsync();
             }
             catch(SqlException ex)
             {
@@ -65,7 +67,8 @@ namespace WebApplMVC_EntityFramework.Services
         {
             try
             {
-                return await _context.SprIzds.ToListAsync();
+                return await _context.SprIzds.AsNoTracking().
+                    ToListAsync();
             }
             catch(SqlException ex)
             {
@@ -91,7 +94,8 @@ namespace WebApplMVC_EntityFramework.Services
         {
             try
             {
-                return await _context.SprThemes.ToListAsync();
+                return await _context.SprThemes.AsNoTracking().
+                    ToListAsync();
             }
             catch(SqlException ex)
             {
